@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+#VERSION='1.0.0'
+
+#if ! docker image inspect "kronostechnologies/protoc-docker:${VERSION}" &> /dev/null; then
+#  docker pull "kronostechnologies/protoc-docker:${VERSION}"
+#fi
+
+declare -a FLAGS=( \
+  --interactive \
+  --tty \
+  --rm \
+  -e "USERID=`id -u`" \
+  -e "GROUPID=`id -g`" \
+)
+
+case $(uname) in
+ Linux)
+ get_real_path='readlink -f'
+ ;;
+ Darwin)
+ get_real_path='realpath'
+ ;;
+ *)
+ exit 1
+esac
+
+if [[ -n "$1" ]] && [[ -d "$1" ]]; then
+  CODE_PATH=$($get_real_path "$1")
+  shift
+else
+  CODE_PATH=$(pwd)
+fi
+
+FLAGS+=( -v "${CODE_PATH}":/code )
+
+exec docker run "${FLAGS[@]}" protoc-docker "$@"
