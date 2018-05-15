@@ -18,8 +18,9 @@ do
 done
 
 if [ "$TARGET" != "" ]; then
+  [ "$TARGET"  == 'js' ] && TARGET="node"
   PLUGIN_NAME="grpc_${TARGET}_plugin"
-  PLUGIN_PATH=`which $PLUGIN_NAME`
+  PLUGIN_PATH=`which $PLUGIN_NAME || true`
   if [ -x "$PLUGIN_PATH" ]; then
     PROTOC_ARGS+=("--plugin=protoc-gen-grpc=$PLUGIN_PATH")
   fi
